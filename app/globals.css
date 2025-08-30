@@ -1,0 +1,357 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Added CSS comment to suppress VS Code warning for Tailwind v4 directive */
+/* @custom-variant is a valid Tailwind CSS v4 directive */
+@custom-variant dark (&:is(.dark *));
+
+/* Added CSS comment to suppress VS Code warning for Tailwind v4 directive */
+/* @theme is a valid Tailwind CSS v4 directive */
+@theme inline {
+  --font-sans: var(--font-inter);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    /* Added CSS comment to suppress VS Code warning for Tailwind v4 directive */
+    /* @apply is a valid Tailwind CSS directive */
+    @apply border-border outline-ring/50;
+  }
+  body {
+    /* Added CSS comment to suppress VS Code warning for Tailwind v4 directive */
+    /* @apply is a valid Tailwind CSS directive */
+    @apply bg-background text-foreground;
+  }
+}
+
+:root {
+  --background: oklch(0.08 0.02 264);
+  --foreground: oklch(0.9 0.02 264);
+  --card: oklch(0.12 0.03 264);
+  --card-foreground: oklch(0.85 0.02 264);
+  --popover: oklch(0.12 0.03 264);
+  --popover-foreground: oklch(0.85 0.02 264);
+  --primary: oklch(0.6 0.15 264);
+  --primary-foreground: oklch(0.95 0.02 264);
+  --secondary: oklch(0.15 0.03 264);
+  --secondary-foreground: oklch(0.8 0.02 264);
+  --muted: oklch(0.15 0.03 264);
+  --muted-foreground: oklch(0.6 0.02 264);
+  --accent: oklch(0.55 0.12 280);
+  --accent-foreground: oklch(0.95 0.02 264);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.2 0.03 264);
+  --input: oklch(0.2 0.03 264);
+  --ring: oklch(0.6 0.15 264);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.12 0.03 264);
+  --sidebar-foreground: oklch(0.85 0.02 264);
+  --sidebar-primary: oklch(0.6 0.15 264);
+  --sidebar-primary-foreground: oklch(0.95 0.02 264);
+  --sidebar-accent: oklch(0.15 0.03 264);
+  --sidebar-accent-foreground: oklch(0.8 0.02 264);
+  --sidebar-border: oklch(0.2 0.03 264);
+  --sidebar-ring: oklch(0.6 0.15 264);
+}
+
+/* Custom dark theme with blue/purple gradient background and animations */
+body {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 25%, #2d1b69 50%, #4c1d95 75%, #581c87 100%);
+  min-height: 100vh;
+  font-family: var(--font-sans), sans-serif;
+  color: #e2e8f0;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Elementos decorativos de fundo */
+body::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+  animation: float 20s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  33% {
+    transform: translate(30px, -30px) rotate(120deg);
+  }
+  66% {
+    transform: translate(-20px, 20px) rotate(240deg);
+  }
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.header::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  display: block;
+  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.title {
+  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+}
+
+.subtitle {
+  color: #94a3b8;
+  font-size: 18px;
+  font-weight: 300;
+  opacity: 0.8;
+}
+
+.commands-grid {
+  display: grid;
+  gap: 16px;
+  list-style: none;
+}
+
+.command-item {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 20px 24px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.command-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #8b5cf6, #3b82f6, #06b6d4);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.command-item:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.1), 0 0 0 1px rgba(139, 92, 246, 0.1);
+}
+
+.command-item:hover::before {
+  transform: scaleX(1);
+}
+
+.command-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.bullet {
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  }
+  to {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+  }
+}
+
+.command-text {
+  flex: 1;
+}
+
+.command {
+  font-weight: 600;
+  color: #a78bfa;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 16px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.description {
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 60px;
+  padding: 30px;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  position: relative;
+}
+
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  border-radius: 20px;
+  z-index: -1;
+}
+
+.author {
+  color: #8b5cf6;
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.author-subtitle {
+  color: #64748b;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .icon {
+    font-size: 48px;
+  }
+
+  .command-item {
+    padding: 16px 20px;
+  }
+
+  .command {
+    font-size: 14px;
+  }
+}

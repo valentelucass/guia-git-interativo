@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Básico de Git</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 25%, #2d1b69 50%, #4c1d95 75%, #581c87 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: #e2e8f0;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Elementos decorativos de fundo */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+        }
+        
+        .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .title {
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+        }
+        
+        .subtitle {
+            color: #94a3b8;
+            font-size: 18px;
+            font-weight: 300;
+            opacity: 0.8;
+        }
+        
+        .commands-grid {
+            display: grid;
+            gap: 16px;
+            list-style: none;
+        }
+        
+        .command-item {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 16px;
+            padding: 20px 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .command-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #8b5cf6, #3b82f6, #06b6d4);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .command-item:hover {
+            transform: translateY(-4px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.1),
+                        0 0 0 1px rgba(139, 92, 246, 0.1);
+        }
+        
+        .command-item:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .command-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        
+        .bullet {
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
+            to { box-shadow: 0 0 20px rgba(139, 92, 246, 0.8); }
+        }
+        
+        .command-text {
+            flex: 1;
+        }
+        
+        .command {
+            font-weight: 600;
+            color: #a78bfa;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 16px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        
+        .description {
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            position: relative;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border-radius: 20px;
+            z-index: -1;
+        }
+        
+        .author {
+            color: #8b5cf6;
+            font-weight: 500;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .author-subtitle {
+            color: #64748b;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .title {
+                font-size: 32px;
+            }
+            
+            .icon {
+                font-size: 48px;
+            }
+            
+            .command-item {
+                padding: 16px 20px;
+            }
+            
+            .command {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">GUIA BÁSICO DE GIT</h1>
+            <p class="subtitle">Comandos essenciais para controle de versão</p>
+        </div>
+        
+        <ul class="commands-grid">
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git init</code>
+                        <span class="description">Cria um novo repositório Git</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git clone [url]</code>
+                        <span class="description">Clona um repositório remoto na sua máquina</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git add [nome_do_arquivo]</code>
+                        <span class="description">Adiciona um arquivo no stage</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git add .</code>
+                        <span class="description">Adiciona todos os arquivos no stage</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git commit -m [mensagem]</code>
+                        <span class="description">Salva alterações no histórico</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git status</code>
+                        <span class="description">Mostra o estado do diretório</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git pull</code>
+                        <span class="description">Baixa atualizações do repositório remoto</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git push</code>
+                        <span class="description">Envia alterações para o repositório remoto</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git remote -v</code>
+                        <span class="description">Lista os repositórios remotos configurados</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git branch [nome_da_branch]</code>
+                        <span class="description">Cria uma nova branch</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git checkout [nome_da_branch]</code>
+                        <span class="description">Troca para outra branch</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git checkout -b [nome_da_branch]</code>
+                        <span class="description">Cria e altera para a branch criada</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git merge [nome_da_branch]</code>
+                        <span class="description">Junta alterações da branch com a atual</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git log --oneline</code>
+                        <span class="description">Exibe o histórico de forma resumida</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git diff</code>
+                        <span class="description">Mostra a diferença entre arquivos e a stage area</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git log</code>
+                        <span class="description">Exibe o histórico de commits</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git restore [nome_do_arquivo]</code>
+                        <span class="description">Descarta as alterações em um arquivo</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git revert [commit_id]</code>
+                        <span class="description">Desfaz um commit sem reescrever o histórico</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="command-item">
+                <div class="command-content">
+                    <span class="bullet"></span>
+                    <div class="command-text">
+                        <code class="command">git reset [nome_do_arquivo]</code>
+                        <span class="description">Desfaz o git add de um arquivo</span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        
+        <div class="footer">
+            <div class="author">@valentelucass</div>
+            <div class="author-subtitle">Desenvolvedor & Criador de Conteúdo</div>
+        </div>
+    </div>
+</body>
+</html>
