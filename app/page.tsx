@@ -19,6 +19,9 @@ import {
   Heart,
   History,
   Compass as Compare,
+  Copy,
+  Check,
+  Loader2,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -586,8 +589,19 @@ const gitCategories: GitCategory[] = [
 
 export default function GitGuide() {
   const [expandedCommand, setExpandedCommand] = useState<string | null>(null)
+  const [expandedFavoriteCommand, setExpandedFavoriteCommand] = useState<string | null>(null)
   const [simulatingCommand, setSimulatingCommand] = useState<string | null>(null)
   const [executedSimulations, setExecutedSimulations] = useState<Map<string, boolean>>(new Map())
+  const [favoriteTerminalStates, setFavoriteTerminalStates] = useState<
+    Map<
+      string,
+      {
+        text: string
+        step: "typing" | "executing" | "complete"
+        showCursor: boolean
+      }
+    >
+  >(new Map())
   const [terminalStates, setTerminalStates] = useState<
     Map<
       string,
@@ -659,6 +673,26 @@ export default function GitGuide() {
     }
   }
 
+  const handleFavoriteCommandClick = (commandId: string) => {
+    const favoriteCommandId = `fav-${commandId}`
+    if (expandedFavoriteCommand === favoriteCommandId) {
+      setExpandedFavoriteCommand(null)
+      setExecutedSimulations((prev) => {
+        const newMap = new Map(prev)
+        newMap.delete(favoriteCommandId)
+        return newMap
+      })
+      setFavoriteTerminalStates((prev) => {
+        const newMap = new Map(prev)
+        newMap.delete(favoriteCommandId)
+        return newMap
+      })
+    } else {
+      setExpandedFavoriteCommand(favoriteCommandId)
+      addToHistory(commandId)
+    }
+  }
+
   const addToHistory = (commandId: string) => {
     setCommandHistory((prev) => {
       const newHistory = prev.filter((id) => id !== commandId)
@@ -671,7 +705,10 @@ export default function GitGuide() {
 
     setSimulatingCommand(commandId)
 
-    setTerminalStates(
+    const isFavoriteCommand = commandId.startsWith("fav-")
+    const stateUpdater = isFavoriteCommand ? setFavoriteTerminalStates : setTerminalStates
+
+    stateUpdater(
       (prev) =>
         new Map(
           prev.set(commandId, {
@@ -684,7 +721,7 @@ export default function GitGuide() {
 
     // Typing animation
     for (let i = 0; i <= command.length; i++) {
-      setTerminalStates(
+      stateUpdater(
         (prev) =>
           new Map(
             prev.set(commandId, {
@@ -697,7 +734,7 @@ export default function GitGuide() {
       await new Promise((resolve) => setTimeout(resolve, 50))
     }
 
-    setTerminalStates(
+    stateUpdater(
       (prev) =>
         new Map(
           prev.set(commandId, {
@@ -709,11 +746,11 @@ export default function GitGuide() {
     )
     await new Promise((resolve) => setTimeout(resolve, 800))
 
-    setTerminalStates(
+    stateUpdater(
       (prev) =>
         new Map(
           prev.set(commandId, {
-            text: command + "\n" + output,
+            text: command,
             step: "complete",
             showCursor: false,
           }),
@@ -773,7 +810,8 @@ export default function GitGuide() {
     output,
     commandId,
   }: { command: string; output: string; commandId: string }) => {
-    const terminalState = terminalStates.get(commandId) || {
+    const isFavoriteCommand = commandId.startsWith("fav-")
+    const terminalState = (isFavoriteCommand ? favoriteTerminalStates : terminalStates).get(commandId) || {
       text: "",
       step: "typing" as const,
       showCursor: true,
@@ -798,7 +836,7 @@ export default function GitGuide() {
                 <span className="inline-block w-2 h-5 bg-green-400 ml-1 animate-pulse"></span>
               )}
             </div>
-            {terminalState.step !== "typing" && (
+            {terminalState.step === "complete" && (
               <div className="text-slate-300 whitespace-pre-wrap text-left">{output}</div>
             )}
           </div>
@@ -993,7 +1031,7 @@ export default function GitGuide() {
                       <CardContent className="p-0">
                         <div
                           className="w-full p-4 sm:p-6 h-auto justify-between transition-all duration-300 font-extralight hover:bg-transparent text-white cursor-pointer flex"
-                          onClick={() => handleCommandClick(cmd.id)}
+                          onClick={() => handleFavoriteCommandClick(cmd.id)}
                         >
                           <div className="flex items-center gap-3 sm:gap-4 pl-2 sm:pl-4 flex-1 min-w-0">
                             <div className="p-2 rounded-lg transition-all duration-300 bg-blue-500/20 text-blue-400 flex-shrink-0">
@@ -1046,11 +1084,74 @@ export default function GitGuide() {
 
                             <ChevronDown
                               className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ${
-                                expandedCommand === cmd.id ? "rotate-180" : ""
+                                expandedFavoriteCommand === `fav-${cmd.id}` ? "rotate-180" : ""
                               } text-slate-400`}
                             />
                           </div>
                         </div>
+
+                        {expandedFavoriteCommand === `fav-${cmd.id}` && (
+                          <div className="px-4 sm:px-8 pb-6 sm:pb-8 animate-in slide-in-from-top-2 fade-in-50 duration-500">
+                            <TerminalAnimation command={cmd.example} output={cmd.output} commandId={`fav-${cmd.id}`} />
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mt-6 sm:mt-8">
+                              <Button
+                                onClick={() => copyToClipboard(cmd.command)}
+                                variant="outline"
+                                size="lg"
+                                className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 animate-in fade-in-50 slide-in-from-bottom-2 duration-300 delay-200 backdrop-blur-md border-0 shadow-lg shadow-blue-500/20 w-full sm:w-auto"
+                                style={{
+                                  background: "rgba(59, 130, 246, 0.15)",
+                                  backdropFilter: "blur(16px)",
+                                  border: "1px solid rgba(148, 163, 184, 0.1)",
+                                }}
+                              >
+                                {copiedCommand === cmd.command ? (
+                                  <>
+                                    <Check className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                                    <span className="text-sm sm:text-base font-medium">Copiado!</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                                    <span className="text-sm sm:text-base font-medium">Copiar Comando</span>
+                                  </>
+                                )}
+                              </Button>
+
+                              <Button
+                                onClick={() => simulateCommand(cmd.example, cmd.output, `fav-${cmd.id}`)}
+                                disabled={
+                                  simulatingCommand === `fav-${cmd.id}` || executedSimulations.get(`fav-${cmd.id}`)
+                                }
+                                variant="outline"
+                                size="lg"
+                                className="px-4 sm:px-6 py-2 sm:py-3 bg-green-600/20 text-green-300 hover:bg-green-600/30 disabled:bg-slate-600/50 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 animate-in fade-in-50 slide-in-from-bottom-2 duration-300 delay-300 backdrop-blur-md border-0 shadow-lg shadow-green-500/20 disabled:shadow-none w-full sm:w-auto"
+                                style={{
+                                  background: "rgba(34, 197, 94, 0.15)",
+                                  backdropFilter: "blur(16px)",
+                                  border: "1px solid rgba(148, 163, 184, 0.1)",
+                                }}
+                              >
+                                {simulatingCommand === `fav-${cmd.id}` ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
+                                    <span className="text-sm sm:text-base font-medium">Simulando...</span>
+                                  </>
+                                ) : executedSimulations.get(`fav-${cmd.id}`) ? (
+                                  <>
+                                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                                    <span className="text-sm sm:text-base font-medium">Simulado</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                                    <span className="text-sm sm:text-base font-medium">Simular</span>
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   ))}
@@ -1095,6 +1196,23 @@ export default function GitGuide() {
                     ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {searchQuery && filteredCategories.length === 0 && (
+            <div className="max-w-4xl mx-auto mb-8 sm:mb-12 px-4">
+              <div
+                className="text-center py-12 px-4 rounded-2xl backdrop-blur-md border shadow-lg"
+                style={{
+                  background: "rgba(15, 23, 42, 0.4)",
+                  backdropFilter: "blur(16px)",
+                  border: "1px solid rgba(148, 163, 184, 0.2)",
+                }}
+              >
+                <Search className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                <p className="text-slate-400 text-lg">Nenhum comando encontrado</p>
+                <p className="text-slate-500 text-sm mt-2">Tente pesquisar com outros termos</p>
+              </div>
             </div>
           )}
 
@@ -1253,6 +1371,20 @@ export default function GitGuide() {
               </div>
             ))}
           </div>
+
+          <footer className="text-center py-8 text-slate-500 text-sm">
+            <p>
+              Feito por Lucas Andrade • Instagram:{" "}
+              <a
+                href="https://www.instagram.com/valentelucass"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-400 hover:text-blue-400 transition-colors"
+              >
+                @valentelucass
+              </a>
+            </p>
+          </footer>
         </div>
       </div>
     </div>
