@@ -1372,18 +1372,25 @@ export default function GitGuide() {
             ))}
           </div>
 
-          <footer className="text-center py-8 text-slate-500 text-sm">
-            <p>
-              Feito por Lucas Andrade • Instagram:{" "}
-              <a
-                href="https://www.instagram.com/valentelucass"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-400 hover:text-blue-400 transition-colors"
-              >
-                @valentelucass
-              </a>
-            </p>
+          <footer className="text-center py-6 text-sm text-slate-400">
+            Feito por <span className="font-semibold text-white">Lucas Andrade 💙</span> •{" "}
+            <a
+              href="https://www.instagram.com/valentelucass"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-400 transition-colors"
+            >
+              @valentelucass
+            </a>{" "}
+            •{" "}
+            <a
+              href="https://www.linkedin.com/in/dev-lucasandrade/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-400 transition-colors"
+            >
+              LinkedIn
+            </a>
           </footer>
         </div>
       </div>
