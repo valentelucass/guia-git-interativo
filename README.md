@@ -1,11 +1,4 @@
-<!-- PORTFOLIO-FEATURED
-title: Guia Git Interativo
-description: Guia de comandos Git com simulações interativas para aprender e consultar de forma prática. Inclui busca, favoritos e comparador de comandos.
-technologies: Next.js, React, TypeScript, Tailwind CSS, Shadcn/ui
-demo: https://guia-git-interativo.vercel.app/
-highlight: true
-image: ./public/foto.png
--->
+
 
 <p align="center">
   <img src="./public/foto.png" alt="Capa do projeto" width="1200">
