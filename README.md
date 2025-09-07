@@ -4,11 +4,11 @@ description: Guia de comandos Git com simulações interativas para aprender e c
 technologies: Next.js, React, TypeScript, Tailwind CSS, Shadcn/ui
 demo: https://guia-git-interativo.vercel.app/
 highlight: true
-image: ./public/foto.png
+image: foto.png
 -->
 
 <p align="center">
-  <img src="./public/foto.png" alt="Capa do projeto" width="1200">
+  <img src="foto.png" alt="Capa do projeto" width="1200">
 </p>
 
 Link: https://guia-git-interativo.vercel.app/
